@@ -1,5 +1,5 @@
 from flask import Flask, request
-from requests import post
+from requests import post, get
 from dotenv import load_dotenv
 from os import environ
 from flask_migrate import Migrate
@@ -56,8 +56,16 @@ def webex_webhook():
     print('LLEGO DATA DEL WEBHOOK!')
     print(request.json)
     print('-----------')
+
+    record_id = request.json.get('data').get('id')
+    token = environ.get('WEBEX_TOKEN')
+
+    result = get(f'https://webexapis.com/v1/recordings/{record_id}',
+                 headers={'Authorization': f'Bearer {token}'}).json()
+
     send_discord_message(
-        '1091148055643959439', 'https://google.com', 'https://google.com', '123123123')
+        '1091148055643959439', result.get('downloadUrl'), result.get('playbackUrl'), result.get('password'))
+
     return {
         'message': 'ok'
     }, 204
