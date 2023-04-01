@@ -51,7 +51,7 @@ def send_discord_message(channel: str, download_link: str, playback_link: str, p
          json=data, headers={'Authorization': f'Bot {token}'})
 
 
-@app.route('/webex-webhook')
+@app.route('/webex-webhook', methods=['GET', 'POST'])
 def webex_webhook():
     print('LLEGO DATA DEL WEBHOOK!')
     print(request.json)
