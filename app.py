@@ -46,9 +46,11 @@ def send_discord_message(channel: str, download_link: str, playback_link: str, p
     }
 
     token = environ.get('DISCORD_TOKEN')
+    print(data)
+    result = post(f'https://discord.com/api/channels/{channel}/messages',
+                  json=data, headers={'Authorization': f'Bot {token}'})
 
-    post(f'https://discord.com/api/channels/{channel}/messages',
-         json=data, headers={'Authorization': f'Bot {token}'})
+    print(result.status_code)
 
 
 @app.route('/webex-webhook', methods=['GET', 'POST'])
@@ -59,16 +61,28 @@ def webex_webhook():
 
     record_id = request.json.get('data').get('id')
     token = environ.get('WEBEX_TOKEN')
-
     result = get(f'https://webexapis.com/v1/recordings/{record_id}',
-                 headers={'Authorization': f'Bearer {token}'}).json()
+                 headers={'Authorization': f'Bearer {token}'})
+
+    if (result.status_code == 401):
+        print('Token del webex invalida')
+        return {
+            'message': 'ok'
+        }, 204
 
     send_discord_message(
-        '1091148055643959439', result.get('downloadUrl'), result.get('playbackUrl'), result.get('password'))
+        '1091148055643959439', result.json().get('downloadUrl'), result.json().get('playbackUrl'), result.json().get('password'))
 
     return {
         'message': 'ok'
     }, 204
+
+
+@app.route('/login-webex')
+def login_webex():
+    print('login!')
+    print(request.json)
+    return {'message': 'ok'}, 204
 
 
 @app.route('/')
