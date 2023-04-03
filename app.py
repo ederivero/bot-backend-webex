@@ -78,11 +78,11 @@ def webex_webhook():
     }, 204
 
 
-@app.route('/login-webex')
+@app.route('/login-webex', methods=['GET'])
 def login_webex():
     print('login!')
-    print(request.json)
-    return {'message': 'ok'}, 204
+    print(request.args)
+    return {'message': 'ok'}, 200
 
 
 @app.route('/')
