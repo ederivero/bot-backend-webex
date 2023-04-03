@@ -14,9 +14,9 @@ conexion.init_app(app)
 Migrate(app=app, db=conexion)
 
 
-def send_discord_message(channel: str, download_link: str, playback_link: str, password: str):
+def send_discord_message(channel: str, date, download_link: str, playback_link: str, password: str):
     data = {
-        'content': f'Hola 🤖 @everyone este es el link de la sesión de hoy! Recuerda que esta es la password: `{password}`',
+        'content': f'Hola 🤖 @everyone este es el link de la sesión de hoy **{date}** 🗓️! Recuerda que esta es la password: `{password}` 🔑',
         'components': [
             {
                 'type': 1,
@@ -71,7 +71,7 @@ def webex_webhook():
         }, 204
 
     send_discord_message(
-        '1091148055643959439', result.json().get('downloadUrl'), result.json().get('playbackUrl'), result.json().get('password'))
+        '1091148055643959439', result.json().get('createTime').split('T')[0], result.json().get('downloadUrl'), result.json().get('playbackUrl'), result.json().get('password'))
 
     return {
         'message': 'ok'
