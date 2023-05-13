@@ -74,8 +74,9 @@ def webex_webhook():
     # TEMPORAL
     name = name.split('-')[1]
     # TEMPORAL FIN
-    group = conexion.session.query(Group).filter_by(
-        name=Group.name.like(f"%{name}%")).first()
+    print(name)
+    group = conexion.session.query(Group).filter(
+        Group.name.like(f"%{name}%")).first()
 
     if not group:
         return {
