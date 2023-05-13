@@ -69,9 +69,21 @@ def webex_webhook():
         return {
             'message': 'ok'
         }, 204
+    webex_data = result.json()
+    name = webex_data.get('topic')
+    # TEMPORAL
+    name = name.split('-')[1]
+    # TEMPORAL FIN
+    group = conexion.session.query(Group).filter_by(
+        name=Group.name.like(f"%{name}%")).first()
+
+    if not group:
+        return {
+            'message': 'ok'
+        }, 200
 
     send_discord_message(
-        '1091148055643959439', result.json().get('createTime').split('T')[0], result.json().get('downloadUrl'), result.json().get('playbackUrl'), result.json().get('password'))
+        group.channel, webex_data.get('createTime').split('T')[0], webex_data.get('downloadUrl'), webex_data.get('playbackUrl'), webex_data.get('password'))
 
     return {
         'message': 'ok'
