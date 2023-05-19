@@ -5,6 +5,7 @@ from os import environ
 from flask_migrate import Migrate
 from db import conexion
 from models.groups import Group
+from datetime import datetime
 
 load_dotenv()
 
@@ -75,6 +76,7 @@ def webex_webhook():
     name = name.split('-')[1]
     # TEMPORAL FIN
     print(name)
+
     group = conexion.session.query(Group).filter(
         Group.name.like(f"%{name}%")).first()
 
@@ -83,8 +85,14 @@ def webex_webhook():
             'message': 'ok'
         }, 200
 
+    fecha_webex = datetime.strptime(webex_data.get('createTime'),'%Y-%m-%dT%H:%M:%SZ')
+    hora = fecha_webex.hour
+
+    if hora - 5 < 0:
+        fecha_webex = fecha_webex.replace(day= fecha_webex.day - 1)
+
     send_discord_message(
-        group.channel, webex_data.get('createTime').split('T')[0], webex_data.get('downloadUrl'), webex_data.get('playbackUrl'), webex_data.get('password'))
+        group.channel, fecha_webex.strftime('%Y-%m-%d'), webex_data.get('downloadUrl'), webex_data.get('playbackUrl'), webex_data.get('password'))
 
     return {
         'message': 'ok'
